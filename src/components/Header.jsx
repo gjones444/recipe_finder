@@ -1,4 +1,4 @@
-import React from 'react'
+import React from "react";
 import styled from "styled-components";
 
 export const Header = styled.div`
@@ -43,12 +43,8 @@ export const SearchInput = styled.input`
   font-size: 16px;
 `;
 
-const Navbar = () => {
-    return (
-        <div>
-            
-        </div>
-    )
-}
+const HeaderComponent = () => {
+  return <div></div>;
+};
 
-export default Navbar
+export default HeaderComponent;
