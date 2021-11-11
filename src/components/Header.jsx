@@ -12,7 +12,7 @@ export const Header = styled.div`
   box-shadow: 0 3px 6px 0 #555;
   justify-content: space-between;
 `;
-export const Logo = styled.div`
+export const Logo = styled.img`
   width: 36px;
   height: 36px;
   margin: 15px;
@@ -32,7 +32,7 @@ export const SearchComponent = styled.div`
   margin-top: 5px;
 `;
 
-export const SearchIcon = styled.div`
+export const SearchIcon = styled.img`
   width: 32px;
   height: 32px;
 `;

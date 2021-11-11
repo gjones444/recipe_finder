@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import styled from "styled-components";
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
@@ -10,32 +9,23 @@ import {
   Logo,
   AppNameComponent,
   SearchComponent,
-  SearchIcon,
   SearchInput,
+  SearchIcon
 } from "./components/Header";
+import {
+  Container,
+  RecipeListContainer,
+  CoverImage,
+  RecipeContainer,
+  RecipeName,
+  SeeMoreText,
+  IngredientsText,
+  Loader
+} from "./components/RecipeLoadout";
 import Axios from "axios";
 
 const APP_ID = "f00d87f7";
 const APP_KEY = "b7e16be8101cf318d758955693f93bb5";
-
-const Container = styled.div`
-  display: flex;
-  flex-direction: column;
-`;
-
-const RecipeListContainer = styled.div`
-  display: flex;
-  flex-direction: row;
-  padding: 30px;
-  justify-content: space-evenly;
-  gap: 30px;
-  flex-wrap: wrap;
-`;
-
-const CoverImage = styled.img`
-  object-fit: cover;
-  height: 200px;
-`;
 
 const RecipeComponent = (props) => {
   const [show, setShow] = React.useState(false);
@@ -45,6 +35,7 @@ const RecipeComponent = (props) => {
   const handleClose = () => {
     setShow(false);
   };
+
   return (
     <>
       <Dialog open={show}>
@@ -71,9 +62,9 @@ const RecipeComponent = (props) => {
       <RecipeContainer>
         <CoverImage src={recipeObj.image} />
         <RecipeName>{recipeObj.label}</RecipeName>
-        <IngredientText onClick={() => setShow(true)}>
+        <IngredientsText onClick={() => setShow(true)}>
           Ingredients
-        </IngredientText>
+        </IngredientsText>
         <SeeMoreText onClick={() => window.open(recipeObj.url)}>
           View Original Recipe
         </SeeMoreText>
@@ -81,45 +72,6 @@ const RecipeComponent = (props) => {
     </>
   );
 };
-
-const RecipeContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  padding: 10px;
-  width: 250px;
-  box-shadow: 0 3px 10px 0 #aaa;
-`;
-
-const RecipeName = styled.span`
-  font-size: 18px;
-  font-weight: bold;
-  color: black;
-  margin: 10px 0;
-`;
-
-const IngredientsText = styled.span`
-  font-size: 18px;
-  font-weight: bold;
-  border: solid 2px green;
-  color: black;
-  margin-bottom: 12px;
-  cursor: pointer;
-  padding: 10px 15px;
-  border-radius: 4px;
-  color: green;
-  text-align: center;
-`;
-
-const SeeMoreText = styled(IngredientsText)`
-  color: orange;
-  border: solid 2px orange;
-`;
-
-const IngredientText = styled(SeeMoreText)`
-  color: green;
-  border: solid 1px green;
-  margin-bottom: 12px;
-`;
 
 function App() {
   const [timeoutId, updateTimeoutId] = useState();
@@ -142,19 +94,22 @@ function App() {
     <Container>
       <Header>
         <AppNameComponent>
+        <Logo src="saladlogo.png" />
           Recipe Finder
-          <Logo>INSERT LOGO HERE</Logo>
         </AppNameComponent>
         <SearchComponent>
-          <SearchIcon src="../public/search-icon.svg" />
+          <SearchIcon src="search_icon.svg"/>
           <SearchInput onChange={onTextChange} placeholder="Search Recipe" />
         </SearchComponent>
       </Header>
       <RecipeListContainer>
-        {recipeList.length &&
+        {recipeList.length ? (
           recipeList.map((recipeObj) => (
             <RecipeComponent recipeObj={recipeObj.recipe}></RecipeComponent>
-          ))}
+          ))
+        ) : (
+          <Loader src="saladlogo.png" />
+        )}
       </RecipeListContainer>
     </Container>
   );
