@@ -1,6 +1,10 @@
 import React, { useState } from "react";
-import "./App.css";
 import styled from "styled-components";
+import Button from "@mui/material/Button";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogTitle from "@mui/material/DialogTitle";
 import {
   Header,
   Logo,
@@ -27,16 +31,63 @@ const RecipeListContainer = styled.div`
   gap: 30px;
   flex-wrap: wrap;
 `;
+
+const CoverImage = styled.img`
+  object-fit: cover;
+  height: 200px;
+`;
+
+const RecipeComponent = (props) => {
+  const [show, setShow] = React.useState(false);
+  const { recipeObj } = props;
+  console.log(recipeObj);
+
+  const handleClose = () => {
+    setShow(false);
+  };
+  return (
+    <>
+      <Dialog open={show}>
+        <DialogTitle id="alert-dialog-slide-title">Ingredients</DialogTitle>
+        <DialogContent id="alert-dialog-slide-title">
+          <table>
+            <thead>
+              <th>Ingredients</th>
+            </thead>
+            <tbody>
+              {recipeObj.ingredients.map((ingredientObj) => (
+                <tr>
+                  <td>{ingredientObj.text}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => window.open(recipeObj.url)}>See More</Button>
+          <Button onClick={handleClose}>Close</Button>
+        </DialogActions>
+      </Dialog>
+      <RecipeContainer>
+        <CoverImage src={recipeObj.image} />
+        <RecipeName>{recipeObj.label}</RecipeName>
+        <IngredientText onClick={() => setShow(true)}>
+          Ingredients
+        </IngredientText>
+        <SeeMoreText onClick={() => window.open(recipeObj.url)}>
+          View Original Recipe
+        </SeeMoreText>
+      </RecipeContainer>
+    </>
+  );
+};
+
 const RecipeContainer = styled.div`
   display: flex;
   flex-direction: column;
   padding: 10px;
   width: 250px;
   box-shadow: 0 3px 10px 0 #aaa;
-`;
-
-const RecipeImage = styled.img`
-  height: 200px;
 `;
 
 const RecipeName = styled.span`
@@ -59,35 +110,40 @@ const IngredientsText = styled.span`
   text-align: center;
 `;
 
-const ViewRecipeText = styled(IngredientsText)`
+const SeeMoreText = styled(IngredientsText)`
   color: orange;
   border: solid 2px orange;
 `;
 
+const IngredientText = styled(SeeMoreText)`
+  color: green;
+  border: solid 1px green;
+  margin-bottom: 12px;
+`;
+
 function App() {
+  const [timeoutId, updateTimeoutId] = useState();
+  const [recipeList, updateRecipeList] = useState([]);
 
-const [timeoutId, updateTimeoutId] = useState();
+  const fetchRecipe = async (searchString) => {
+    const response = await Axios.get(
+      `https://api.edamam.com/search?q=${searchString}&app_id=${APP_ID}&app_key=${APP_KEY}`
+    );
+    updateRecipeList(response.data.hits);
+  };
 
-const fetchRecipe = (searchString) => {
-  Axios.get(
-    `https://api.edamam.com/search?q=${searchString}&app_id=${APP_ID}&app_key=${APP_KEY}`
-  ).then(function (response) {
-    // handle success
-    console.log(response);
-  });
-};
+  const onTextChange = (e) => {
+    clearTimeout(timeoutId);
+    const timeout = setTimeout(() => fetchRecipe(e.target.value), 500);
+    updateTimeoutId(timeout);
+  };
 
-const onTextChange = (e) => {
-  clearTimeout(timeoutId);
-  const timeout = setTimeout(() => fetchRecipe(e.target.value), 500);
-  updateTimeoutId(timeout);
-};
   return (
     <Container>
       <Header>
         <AppNameComponent>
           Recipe Finder
-          <Logo></Logo>
+          <Logo>INSERT LOGO HERE</Logo>
         </AppNameComponent>
         <SearchComponent>
           <SearchIcon src="../public/search-icon.svg" />
@@ -95,20 +151,10 @@ const onTextChange = (e) => {
         </SearchComponent>
       </Header>
       <RecipeListContainer>
-        <RecipeContainer>
-          <RecipeImage src="https://www.edamam.com/web-img/b71/b716942f16e3e9490829f7da8dba509e.jpg" />
-          <RecipeName>Title</RecipeName>
-          <IngredientsText>Ingredients</IngredientsText>
-          <ViewRecipeText>View Recipe</ViewRecipeText>
-        </RecipeContainer>
-      </RecipeListContainer>
-      <RecipeListContainer>
-        <RecipeContainer>
-          <RecipeImage src="https://www.edamam.com/web-img/b71/b716942f16e3e9490829f7da8dba509e.jpg" />
-          <RecipeName>Title</RecipeName>
-          <IngredientsText>Ingredients</IngredientsText>
-          <ViewRecipeText>View Recipe</ViewRecipeText>
-        </RecipeContainer>
+        {recipeList.length &&
+          recipeList.map((recipeObj) => (
+            <RecipeComponent recipeObj={recipeObj.recipe}></RecipeComponent>
+          ))}
       </RecipeListContainer>
     </Container>
   );
